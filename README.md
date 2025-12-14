@@ -6,7 +6,7 @@
 
 This repository provides the synthetic dataset, analysis scripts, and exploratory results associated with the research paper:
 
-**Title:** *Cognitive Retrieval Architectures for Supply Chain Resilience: Robust Trade-off Optimization and Key–Context Fusion for High-Dimensional Vector Search in Logistics Industry*
+**Title:** *Trade-off-Aware Cognitive Architectures for Supply Chain Knowledge Retrieval: From Dimensionality Reduction to Autonomous Optimization*
 
 The primary goal of this repository is to ensure the transparency, reproducibility, and verifiability of our research findings by making the underlying data and exploration methodology publicly available.
 
