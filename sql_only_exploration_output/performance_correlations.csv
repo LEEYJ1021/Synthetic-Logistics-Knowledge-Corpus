@@ -1,0 +1,5 @@
+scope,cor_time_precision,cor_time_recall,cor_precision_recall
+overall,0.3256,NA,NA
+Customer requirement,NA,NA,NA
+Shipping order,0.3681,NA,NA
+Warehouse policy,0.4225,NA,NA

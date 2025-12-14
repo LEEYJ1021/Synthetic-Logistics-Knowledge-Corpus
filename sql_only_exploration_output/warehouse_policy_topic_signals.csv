@@ -1,0 +1,10 @@
+topic,n,pct_of_warehouse_policies
+fifo,911,100
+temperature_control,911,100
+cross_dock,46,5.05
+cycle_count,46,5.05
+picking,45,4.94
+fefo,0,0
+hazmat,0,0
+pallet,0,0
+putaway,0,0

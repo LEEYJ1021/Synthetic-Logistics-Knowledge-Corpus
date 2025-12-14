@@ -1,0 +1,4 @@
+doc_type_label,n_docs,mean_chars,sd_chars,min_chars,max_chars
+Customer requirement,911,4090.4,13.3,4053,4140
+Shipping order,911,1567.1,11.7,1537,1602
+Warehouse policy,911,3985.4,5.8,3972,4000

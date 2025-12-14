@@ -1,0 +1,4 @@
+doc_type_label,n_queries,mean_query_time_s,sd_query_time_s,mean_precision,mean_recall,mean_f1
+Customer requirement,51,1.5972,0.4316,2,1,1.3333
+Shipping order,52,1.5737,0.4596,1.9808,1,1.3269
+Warehouse policy,51,1.597,0.432,1.9804,1,1.3268

@@ -1,0 +1,4 @@
+doc_type_label,n_docs,n_with_embedding_hash,pct_with_embedding_hash
+Customer requirement,911,911,100
+Shipping order,911,911,100
+Warehouse policy,911,911,100

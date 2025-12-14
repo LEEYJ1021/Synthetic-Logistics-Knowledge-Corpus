@@ -1,0 +1,4 @@
+doc_type_label,n_docs,mean_words,sd_words,min_words,max_words
+Customer requirement,911,405.1,1.7,401,413
+Shipping order,911,143.4,1.4,140,150
+Warehouse policy,911,395.6,0,394,397

@@ -1,0 +1,4 @@
+doc_type_label,n_docs,docs_with_sku,docs_with_eta,docs_with_incoterms_codes,docs_with_warehouse_term,docs_with_route_term,docs_with_pallet_term,docs_with_hazmat_term
+Customer requirement,911,0,911,911,0,911,0,0
+Shipping order,911,0,911,0,0,911,0,911
+Warehouse policy,911,0,0,911,911,911,0,0

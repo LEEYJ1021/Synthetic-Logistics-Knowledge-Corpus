@@ -1,0 +1,370 @@
+type,object_name,table_name,sql
+table,documents,documents,"CREATE TABLE documents (
+                doc_id TEXT PRIMARY KEY,
+                doc_type TEXT,
+                content TEXT,
+                metadata TEXT,
+                timestamp TEXT,
+                embedding_hash TEXT
+            )"
+table,performance_metrics,performance_metrics,"CREATE TABLE performance_metrics (
+                query_id TEXT,
+                doc_type TEXT,
+                query_time REAL,
+                precision_score REAL,
+                recall_score REAL,
+                timestamp TEXT
+            )"
+table,rpt_doc_counts_by_type,rpt_doc_counts_by_type,"CREATE TABLE rpt_doc_counts_by_type(
+  doc_type_label,
+  n_docs
+)"
+table,rpt_doc_length_stats_by_type,rpt_doc_length_stats_by_type,"CREATE TABLE rpt_doc_length_stats_by_type(
+  doc_type_label,
+  n_docs,
+  mean_chars,
+  sd_chars,
+  min_chars,
+  max_chars
+)"
+table,rpt_shipping_top_lanes,rpt_shipping_top_lanes,"CREATE TABLE rpt_shipping_top_lanes(
+  origin,
+  destination,
+  n_shipments
+)"
+view,v_documents_base,v_documents_base,"CREATE VIEW v_documents_base AS
+SELECT
+  doc_id,
+  doc_type,
+  lower(replace(doc_type,' ','_')) AS doc_type_norm,
+  
+CASE lower(replace(doc_type,' ','_'))
+  WHEN 'shipping_order' THEN 'Shipping order'
+  WHEN 'warehouse_policy' THEN 'Warehouse policy'
+  WHEN 'customer_requirement' THEN 'Customer requirement'
+  ELSE doc_type
+END
+ AS doc_type_label,
+  COALESCE(content, '') AS content_safe,
+  LENGTH(COALESCE(content, '')) AS content_length,
+  timestamp,
+  substr(CAST(timestamp AS TEXT), 1, 10) AS day_key,
+  embedding_hash,
+  metadata
+FROM documents"
+view,v_documents_meta_extracted,v_documents_meta_extracted,"CREATE VIEW v_documents_meta_extracted AS
+  SELECT
+    doc_id,
+    doc_type_norm,
+    doc_type_label,
+    day_key,
+    content_length,
+    embedding_hash,
+    metadata_text,
+    metadata_is_valid,
+
+    -- Common logistics identifiers (robust COALESCE across likely keys)
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.order_id') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.shipment_id') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.so_id') END
+    ) AS order_id,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.client') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.customer') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.customer_name') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.consignee') END
+    ) AS client_name,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.origin') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.ship_from') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.pickup_location') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.origin_port') END
+    ) AS origin,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.destination') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.ship_to') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.delivery_location') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.destination_port') END
+    ) AS destination,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.incoterms') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.incoterm') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.inco_terms') END
+    ) AS incoterms_raw,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.priority') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.service_level') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.urgency') END
+    ) AS priority_raw,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.mode') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.transport_mode') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.shipment_mode') END
+    ) AS mode_raw,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.carrier') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.carrier_name') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.forwarder') END
+    ) AS carrier,
+
+    COALESCE(
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.warehouse') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.warehouse_id') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.facility') END,
+      CASE WHEN metadata_is_valid=1 THEN json_extract(metadata_text,'$.dc') END
+    ) AS warehouse,
+
+    -- SKU/item count: arrays OR explicit count fields
+    COALESCE(
+      CASE
+        WHEN metadata_is_valid=1 AND json_type(metadata_text,'$.skus')='array'
+          THEN json_array_length(metadata_text,'$.skus')
+      END,
+      CASE
+        WHEN metadata_is_valid=1 AND json_type(metadata_text,'$.items')='array'
+          THEN json_array_length(metadata_text,'$.items')
+      END,
+      CASE
+        WHEN metadata_is_valid=1 AND json_type(metadata_text,'$.lines')='array'
+          THEN json_array_length(metadata_text,'$.lines')
+      END,
+      CASE WHEN metadata_is_valid=1 THEN CAST(json_extract(metadata_text,'$.sku_count') AS INTEGER) END,
+      CASE WHEN metadata_is_valid=1 THEN CAST(json_extract(metadata_text,'$.item_count') AS INTEGER) END
+    ) AS sku_count
+
+  FROM (
+    SELECT
+      doc_id,
+      lower(replace(doc_type,' ','_')) AS doc_type_norm,
+      
+CASE lower(replace(doc_type,' ','_'))
+  WHEN 'shipping_order' THEN 'Shipping order'
+  WHEN 'warehouse_policy' THEN 'Warehouse policy'
+  WHEN 'customer_requirement' THEN 'Customer requirement'
+  ELSE doc_type
+END
+ AS doc_type_label,
+      substr(CAST(timestamp AS TEXT), 1, 10) AS day_key,
+      LENGTH(COALESCE(content, '')) AS content_length,
+      embedding_hash,
+      CAST(metadata AS TEXT) AS metadata_text,
+      COALESCE(json_valid(CAST(metadata AS TEXT)), 0) AS metadata_is_valid
+    FROM documents
+  ) base"
+view,v_documents_wc,v_documents_wc,"CREATE VIEW v_documents_wc AS
+SELECT
+  doc_id,
+  doc_type_norm,
+  doc_type_label,
+  day_key,
+  content_length,
+  content_ws,
+  CASE
+    WHEN content_ws = '' THEN 0
+    ELSE (LENGTH(content_ws) - LENGTH(REPLACE(content_ws, ' ', '')) + 1)
+  END AS word_count
+FROM (
+  SELECT
+    doc_id,
+    lower(replace(doc_type,' ','_')) AS doc_type_norm,
+    
+CASE lower(replace(doc_type,' ','_'))
+  WHEN 'shipping_order' THEN 'Shipping order'
+  WHEN 'warehouse_policy' THEN 'Warehouse policy'
+  WHEN 'customer_requirement' THEN 'Customer requirement'
+  ELSE doc_type
+END
+ AS doc_type_label,
+    substr(CAST(timestamp AS TEXT), 1, 10) AS day_key,
+    LENGTH(COALESCE(content, '')) AS content_length,
+    trim(
+      replace(replace(replace(
+        replace(replace(replace(replace(COALESCE(content,''), char(13), ' '), char(10), ' '), char(9), ' '),
+        '  ', ' '), '  ', ' '), '  ', ' '), '  ', ' ')
+    ) AS content_ws
+  FROM documents
+)"
+view,v_shipping_orders_enriched,v_shipping_orders_enriched,"CREATE VIEW v_shipping_orders_enriched AS
+  SELECT
+    doc_id,
+    day_key,
+    content_length,
+
+    -- Prefer metadata; fallback to content parsing for structured synthetic text
+    NULLIF(trim(COALESCE(client_name, client_from_content)), '') AS client_name,
+
+    NULLIF(trim(COALESCE(origin, origin_from_content)), '') AS origin,
+    NULLIF(trim(COALESCE(destination, destination_from_content)), '') AS destination,
+
+    -- Incoterms standardized to 3-letter code when possible
+    NULLIF(upper(substr(trim(COALESCE(incoterms_raw, incoterms_from_content)), 1, 3)), '') AS incoterms_code,
+
+    -- Priority normalized
+    NULLIF(lower(trim(COALESCE(priority_raw, priority_from_content))), '') AS priority,
+
+    -- Mode normalized (simple mapping)
+    CASE
+      WHEN lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%air%' THEN 'air'
+      WHEN lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%sea%' OR lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%ocean%' THEN 'ocean'
+      WHEN lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%road%' OR lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%truck%' THEN 'road'
+      WHEN lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%rail%' THEN 'rail'
+      WHEN lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%courier%' OR lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%parcel%' OR lower(trim(COALESCE(mode_raw, mode_from_content))) LIKE '%express%' THEN 'parcel'
+      ELSE NULLIF(lower(trim(COALESCE(mode_raw, mode_from_content))), '')
+    END AS mode,
+
+    carrier,
+
+    -- SKU count: metadata first, fallback by counting 'SKU' occurrences in content
+    COALESCE(
+      sku_count,
+      CASE
+        WHEN instr(upper(content_safe), 'SKU') > 0 THEN
+          (LENGTH(upper(content_safe)) - LENGTH(REPLACE(upper(content_safe), 'SKU', ''))) / 3
+      END
+    ) AS sku_count,
+
+    -- Priority score for lane-level aggregation
+    CASE
+      WHEN lower(trim(COALESCE(priority_raw, priority_from_content))) IN ('high','urgent','expedite','express') THEN 3
+      WHEN lower(trim(COALESCE(priority_raw, priority_from_content))) IN ('medium','normal','standard') THEN 2
+      WHEN lower(trim(COALESCE(priority_raw, priority_from_content))) IN ('low','economy','deferred') THEN 1
+      ELSE NULL
+    END AS priority_score
+
+  FROM (
+    SELECT
+      b.doc_id,
+      b.day_key,
+      b.content_length,
+      b.content_safe,
+      m.client_name,
+      m.origin,
+      m.destination,
+      m.incoterms_raw,
+      m.priority_raw,
+      m.mode_raw,
+      m.carrier,
+      m.sku_count,
+
+      -- Content parsing helpers (extract line value after a label until newline)
+      -- NOTE: These are safe string ops (no JSON); they will return NULL when label not found.
+
+      -- Client
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Customer:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Customer:') + 9), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Customer:') + 9), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Customer:') + 9), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Customer:') + 9)
+            END
+          WHEN instr(b.content_safe, 'Client:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Client:') + 7), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Client:') + 7), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Client:') + 7), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Client:') + 7)
+            END
+        END
+      ), '') AS client_from_content,
+
+      -- Origin
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Origin:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Origin:') + 7), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Origin:') + 7), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Origin:') + 7), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Origin:') + 7)
+            END
+          WHEN instr(b.content_safe, 'From:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'From:') + 5), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'From:') + 5), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'From:') + 5), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'From:') + 5)
+            END
+        END
+      ), '') AS origin_from_content,
+
+      -- Destination
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Destination:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Destination:') + 12), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Destination:') + 12), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Destination:') + 12), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Destination:') + 12)
+            END
+          WHEN instr(b.content_safe, 'To:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'To:') + 3), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'To:') + 3), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'To:') + 3), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'To:') + 3)
+            END
+        END
+      ), '') AS destination_from_content,
+
+      -- Incoterms
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Incoterms:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Incoterms:') + 10), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Incoterms:') + 10), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Incoterms:') + 10), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Incoterms:') + 10)
+            END
+        END
+      ), '') AS incoterms_from_content,
+
+      -- Priority
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Priority:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Priority:') + 9), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Priority:') + 9), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Priority:') + 9), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Priority:') + 9)
+            END
+        END
+      ), '') AS priority_from_content,
+
+      -- Mode
+      NULLIF(trim(
+        CASE
+          WHEN instr(b.content_safe, 'Mode:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Mode:') + 5), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Mode:') + 5), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Mode:') + 5), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Mode:') + 5)
+            END
+          WHEN instr(b.content_safe, 'Transport Mode:') > 0 THEN
+            CASE
+              WHEN instr(substr(b.content_safe, instr(b.content_safe,'Transport Mode:') + 15), char(10)) > 0 THEN
+                substr(substr(b.content_safe, instr(b.content_safe,'Transport Mode:') + 15), 1,
+                       instr(substr(b.content_safe, instr(b.content_safe,'Transport Mode:') + 15), char(10)) - 1)
+              ELSE substr(b.content_safe, instr(b.content_safe,'Transport Mode:') + 15)
+            END
+        END
+      ), '') AS mode_from_content
+
+    FROM v_documents_base b
+    LEFT JOIN v_documents_meta_extracted m
+      ON b.doc_id = m.doc_id
+    WHERE b.doc_type_norm = 'shipping_order'
+  )"

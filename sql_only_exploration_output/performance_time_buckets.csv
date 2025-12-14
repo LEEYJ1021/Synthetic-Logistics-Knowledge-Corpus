@@ -1,0 +1,13 @@
+doc_type_label,time_bucket,n,pct_within_type
+Customer requirement,0-0.5,1,1.96
+Customer requirement,1-1.5,18,35.29
+Customer requirement,1.5-2,25,49.02
+Customer requirement,2-2.5,7,13.73
+Shipping order,0-0.5,2,3.85
+Shipping order,1-1.5,18,34.62
+Shipping order,1.5-2,25,48.08
+Shipping order,2-2.5,7,13.46
+Warehouse policy,0-0.5,1,1.96
+Warehouse policy,1-1.5,18,35.29
+Warehouse policy,1.5-2,25,49.02
+Warehouse policy,2-2.5,7,13.73
