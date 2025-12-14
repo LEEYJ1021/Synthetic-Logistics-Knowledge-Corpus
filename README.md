@@ -39,6 +39,8 @@ The corpus consists of 2,733 documents, equally distributed across three distinc
 ├── logistics_knowledge.db             # The synthetic SQLite database (2,733 documents).
 ├── SQL_Exploration.R                  # R script for robust SQL-based data exploration and CSV report generation.
 ├── sql_only_exploration_output/       # Directory containing the CSV outputs from the script (28 datasets).
+├── .gitignore
+├── LICENSE
 └── README.md                          # Project documentation.
 ```
 ---
