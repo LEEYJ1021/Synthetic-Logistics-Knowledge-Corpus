@@ -1,0 +1,11 @@
+method,qsr,latency_ms,memory_mb,edge,deployable_note
+"Proposed
+(Hybrid GT)",100.0,1.24,21.4,True,Edge-ready
+BM25,47.0,0.8,5.2,True,Edge-ready
+TF-IDF,43.0,0.7,4.8,True,Edge-ready
+"Dense
+(Cosine)",,1.24,21.4,True,Edge-ready
+"SPLADE
+(projected)",,150.0,512.0,False,GPU required
+"DPR
+(projected)",,180.0,768.0,False,GPU required

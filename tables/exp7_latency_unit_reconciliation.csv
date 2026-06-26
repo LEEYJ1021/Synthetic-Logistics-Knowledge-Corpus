@@ -1,0 +1,5 @@
+section,unit,value,what_is_measured,note
+Section 3.4 (Table 5),seconds (s),1.589 s,End-to-end: SQL + FAISS + metadata + Python overhead,"1.589 s ≈ 1.24 ms FAISS + ~1,588 ms I/O overhead"
+Section 5.1 (Table 9),milliseconds (ms),1.24 ms,FAISS index.search() only (Python perf_counter),Pure vector search; eliminates DB and Python overhead
+Section 5.3 (Table 13),milliseconds (ms),0.87–3.89 ms,"FAISS index.search() only, per index family",IVF-PQ fastest (0.87 ms); HNSW slowest (3.89 ms)
+Section 5.3 (Figure 14),seconds (s),2.54–3.16 s,M/M/c total queuing latency at 1×–10× load,Uses 1.589 s as service time μ⁻¹; includes queuing delay

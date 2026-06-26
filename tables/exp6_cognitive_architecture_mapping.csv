@@ -1,0 +1,23 @@
+function,component,doc_type,theory,section
+Perception,"LLM embedding service
+(d=8,192; key–context split)",All,"Kotseruba & Tsotsos (2020)
+perceptual module","§3.3, RQ5"
+Working Memory,"Query vector + top-K
+retrieved set (transient)",Per query,"Baddeley (1974)
+working memory",§4.2
+Episodic Memory,"SHIPPING_ORDER FAISS
+(IVF-PQ; entity-dense)",Shipping order,"Tulving (1972)
+episodic memory","§3.1, RQ6"
+Procedural Memory,"WAREHOUSE_POLICY FAISS
+(IVF-Flat; SOPs)",Warehouse policy,"Cohen & Squire (1980)
+procedural memory","§3.1, RQ3"
+Declarative Memory,"CUSTOMER_REQ FAISS
+(IVF-Flat; contracts)",Customer req.,"Tulving (1972)
+declarative memory","§3.1, RQ3"
+"Cognitive Control
+/ Adaptation","Agentic tuning policy:
+(QSR, latency) → index",System-level,"Gheibi et al. (2021)
+self-adaptive systems","§5.3–5.4, Table 15"
+Decision Support,"Ranked output →
+RAG / LLM reasoning",All,"Constantiou et al. (2014)
+IR behavior",§7 (future)

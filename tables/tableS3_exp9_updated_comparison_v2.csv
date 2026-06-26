@@ -1,0 +1,7 @@
+method,qsr,latency_ms,p95_ms,edge_deployable,note,memory_mb
+Proposed (2048-d Cosine),100.0,0.4,0.47,True,CPU-actual,21.4
+"BM25 (CPU, actual)",100.0,119.43,119.5,True,CPU-actual,5.2
+"SentenceTransformer (all-MiniLM, CPU)",100.0,0.7,0.71,True,CPU-actual,90.0
+"TF-IDF (CPU, actual)",100.0,0.56,0.57,True,CPU-actual,4.8
+"SPLADE (projected, GPU)",,150.0,,False,GPU projected,512.0
+"DPR (projected, GPU)",,180.0,,False,GPU projected,768.0

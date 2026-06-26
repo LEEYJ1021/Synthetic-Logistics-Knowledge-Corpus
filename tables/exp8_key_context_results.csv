@@ -1,0 +1,9 @@
+fusion,key_dim,ctx_dim,w,ndcg,config,improvement
+Rank-Borda,1024,512,0.75,0.0689,"key=1024, ctx=512",11.0
+Rank-Borda,1536,256,0.5,0.0685,"key=1536, ctx=256",10.3
+Rank-Borda,768,512,0.75,0.0681,"key=768, ctx=512",9.7
+Rank-Borda,1024,256,0.5,0.0668,"key=1024, ctx=256",7.6
+Score-Z,768,512,0.75,0.0672,"key=768, ctx=512",8.2
+Score-Z,1536,256,0.5,0.067,"key=1536, ctx=256",7.9
+Score-Z,768,512,0.5,0.0668,"key=768, ctx=512",7.6
+Score-Z,1024,256,0.5,0.0668,"key=1024, ctx=256",7.6

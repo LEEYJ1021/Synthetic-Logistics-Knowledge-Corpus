@@ -1,0 +1,5 @@
+nlist,Shipping order,Warehouse policy,Customer requirement,macro_dominant
+16,0.188,0.416,0.397,0.623
+32,0.062,0.472,0.466,0.593
+64,0.047,0.455,0.499,0.649
+128,0.024,0.484,0.493,0.693
