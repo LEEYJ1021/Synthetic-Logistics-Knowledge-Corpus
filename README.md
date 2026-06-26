@@ -24,10 +24,9 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 ## 1. Repository Structure
 
 ```
-├── logistics_knowledge.db                    # Synthetic SQLite corpus (2,733 documents)
-├── DATA_MANIFEST.md
-│
 ├── data/                                         # Publication-grade supplementary figures
+│   ├── DATA_MANIFEST.md
+│   ├── logistics_knowledge.db                    # Synthetic SQLite corpus (2,733 documents)
 │   ├── faiss_logistics.index.shipping_order      # FAISS IndexFlatL2, d=8192, n=911
 │   ├── faiss_logistics.index.warehouse_policy    # FAISS IndexFlatL2, d=8192, n=911
 │   └── faiss_logistics.index.customer_requirement # FAISS IndexFlatL2, d=8192, n=911
