@@ -48,6 +48,20 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 │   ├── figSA2_exp4_regularization_decomposition_v2.png  # SA2: Type-level decomposition
 │   └── figSA3_exp9_cpu_dense_retrieval_v2.png    # SA3: CPU dense retrieval comparison
 │
+├── tables/                                       # Publication-ready supplementary tables from cognitive_retrieval_analysis.py
+│   ├── exp1_noise_perturbation_actual.xlsx        # EXP1: Numerical results
+│   ├── exp2_gt_weight_sensitivity_81.xlsx         # EXP2: GT-weight sensitivity (81 settings)
+│   ├── exp4_cluster_purity_actual.xlsx            # EXP4: Cluster-purity decomposition
+│   ├── exp5_fairness_operationalization.xlsx      # EXP5: Fairness metrics
+│   ├── exp6_cognitive_architecture_mapping.xlsx   # EXP6: Architecture mapping
+│   ├── exp7_latency_unit_reconciliation.xlsx      # EXP7: Latency reconciliation
+│   ├── exp8_key_context_results.xlsx              # EXP8: Key-context analysis
+│   ├── exp9_sota_comparison.xlsx                  # EXP9: Comparison with dense retrieval baselines
+│   ├── tableS1_exp1_bootstrap_ci_v2.xlsx          # SA1: Bootstrap confidence intervals
+│   ├── tableS2_exp4_ndcg_decomposition_v2.xlsx    # SA2: nDCG decomposition
+│   └── tableS3_exp9_updated_comparison_v2.xlsx    # SA3: Updated baseline comparison
+│
+│
 ├── SQL_Exploration.R                                   # R script for corpus exploration
 ├── sql_only_exploration_output/                  # CSV outputs from SQL_Exploration.R (28 files)
 │   ├── appendix_recap.md                         # Summary of SQL exploration outputs
