@@ -34,7 +34,7 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 ├── analysis/
 │   └── cognitive_retrieval_analysis.py       # Supplementary experiments (EXP1–EXP9)
 │
-├── figures/                                  # Publication-grade supplementary figures
+├── figures/                                  # Publication-grade supplementary figures outputs from cognitive_retrieval_analysis.py
 │   ├── fig_R1_noise_perturbation_actual.png  # EXP1: Noise perturbation heatmap
 │   ├── fig_R2_gt_sensitivity.png             # EXP2: GT weight sensitivity (81 combos)
 │   ├── fig_R3_agentic_policy.png             # EXP3: Agentic policy decision space
@@ -48,6 +48,7 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 │   ├── figSA2_exp4_regularization_decomposition_v2.png  # SA2: Type-level decomposition
 │   └── figSA3_exp9_cpu_dense_retrieval_v2.png    # SA3: CPU dense retrieval comparison
 │
+├── SQL_Exploration.R                                   # R script for corpus exploration
 ├── sql_only_exploration_output/                  # CSV outputs from SQL_Exploration.R (28 files)
 │   ├── appendix_recap.md                         # Summary of SQL exploration outputs
 │   ├── customer_requirement_topic_signals.csv    # Topic keywords for customer requirements
@@ -78,8 +79,6 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 │   ├── shipping_top_origins.csv                         # Most frequent shipment origins
 │   ├── table_row_counts.csv                             # Row counts for all database tables
 │   └── warehouse_policy_topic_signals.csv               # Topic keywords for warehouse policies
-│
-├── SQL_Exploration.R                                   # R script for corpus exploration
 │
 ├── LICENSE
 └── README.md
