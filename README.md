@@ -28,6 +28,7 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 ├── faiss_logistics.index.shipping_order      # FAISS IndexFlatL2, d=8192, n=911
 ├── faiss_logistics.index.warehouse_policy    # FAISS IndexFlatL2, d=8192, n=911
 ├── faiss_logistics.index.customer_requirement # FAISS IndexFlatL2, d=8192, n=911
+├── DATA_MANIFEST.md
 │
 ├── analysis/
 │   └── cognitive_retrieval_analysis.py       # Supplementary experiments (EXP1–EXP9)
