@@ -48,8 +48,38 @@ The primary goal is to ensure transparency, reproducibility, and verifiability o
 │   ├── figSA2_exp4_regularization_decomposition_v2.png  # SA2: Type-level decomposition
 │   └── figSA3_exp9_cpu_dense_retrieval_v2.png    # SA3: CPU dense retrieval comparison
 │
-├── sql_only_exploration_output/              # CSV outputs from SQL_Exploration.R (28 files)
-├── SQL_Exploration.R                         # R script for corpus exploration
+├── sql_only_exploration_output/                  # CSV outputs from SQL_Exploration.R (28 files)
+│   ├── appendix_recap.md                         # Summary of SQL exploration outputs
+│   ├── customer_requirement_topic_signals.csv    # Topic keywords for customer requirements
+│   ├── doc_counts_by_type.csv                    # Document counts by corpus type
+│   ├── doc_length_stats_by_type.csv              # Character-length statistics by type
+│   ├── doc_wordcount_stats_by_type.csv           # Word-count statistics by type
+│   ├── documents_activity_by_day.csv             # Temporal distribution of documents
+│   ├── embedding_coverage.csv                    # Embedding generation coverage
+│   ├── keyword_signals_by_type.csv               # Keyword frequency by document type
+│   ├── performance_correlations.csv              # Retrieval performance correlations
+│   ├── performance_latency_percentiles_by_type.csv      # Latency percentiles by document type
+│   ├── performance_latency_percentiles_overall.csv      # Overall latency percentiles
+│   ├── performance_lowest_f1_queries_top50.csv          # Lowest-F1 retrieval queries
+│   ├── performance_slowest_queries_top50.csv            # Slowest retrieval queries
+│   ├── performance_summary_by_type.csv                  # Retrieval performance summary
+│   ├── performance_time_buckets.csv                     # Latency bucket distribution
+│   ├── schema_columns.csv                               # Database schema (columns)
+│   ├── schema_objects.csv                               # Database schema (tables/views)
+│   ├── shipping_field_coverage.csv                      # Shipping field completeness
+│   ├── shipping_high_priority_high_sku_examples.csv     # High-priority, high-SKU examples
+│   ├── shipping_incoterms_distribution.csv              # Incoterms distribution
+│   ├── shipping_mode_distribution.csv                   # Transportation mode distribution
+│   ├── shipping_priority_distribution.csv               # Shipping priority distribution
+│   ├── shipping_sku_count_distribution.csv              # SKU count distribution
+│   ├── shipping_top_customers.csv                       # Most frequent customers
+│   ├── shipping_top_destinations.csv                    # Most frequent destinations
+│   ├── shipping_top_lanes.csv                           # Most frequent shipping lanes
+│   ├── shipping_top_origins.csv                         # Most frequent shipment origins
+│   ├── table_row_counts.csv                             # Row counts for all database tables
+│   └── warehouse_policy_topic_signals.csv               # Topic keywords for warehouse policies
+│
+├── SQL_Exploration.R                                   # R script for corpus exploration
 │
 ├── LICENSE
 └── README.md
